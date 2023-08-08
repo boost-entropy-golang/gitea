@@ -28,6 +28,8 @@ import (
 // NewFuncMap returns functions for injecting to templates
 func NewFuncMap() template.FuncMap {
 	return map[string]any{
+		"ctx": func() any { return nil }, // template context function
+
 		"DumpVar": dumpVar,
 
 		// -----------------------------------------------------------------
@@ -57,7 +59,6 @@ func NewFuncMap() template.FuncMap {
 		"avatarHTML":     AvatarHTML,
 		"avatarByAction": AvatarByAction,
 		"avatarByEmail":  AvatarByEmail,
-		"repoAvatar":     RepoAvatar,
 		"EntryIcon":      base.EntryIcon,
 		"MigrationIcon":  MigrationIcon,
 		"ActionIcon":     ActionIcon,
