@@ -118,7 +118,7 @@ func webAuth(authMethod auth_service.Method) func(*context.Context) {
 		ar, err := common.AuthShared(ctx.Base, ctx.Session, authMethod)
 		if err != nil {
 			log.Error("Failed to verify user: %v", err)
-			ctx.Error(http.StatusUnauthorized, "Verify")
+			ctx.Error(http.StatusUnauthorized, "Failed to authenticate user")
 			return
 		}
 		ctx.Doer = ar.Doer
@@ -913,6 +913,8 @@ func registerRoutes(m *web.Router) {
 			m.Post("/teams/{team}/edit", web.Bind(forms.CreateTeamForm{}), org.EditTeamPost)
 			m.Post("/teams/{team}/delete", org.DeleteTeam)
 
+			m.Get("/worktime", context.OrgAssignment(false, true), org.Worktime)
+
 			m.Group("/settings", func() {
 				m.Combo("").Get(org.Settings).
 					Post(web.Bind(forms.UpdateOrgSettingForm{}), org.SettingsPost)
@@ -1428,7 +1430,7 @@ func registerRoutes(m *web.Router) {
 			m.Post("/cancel", reqRepoActionsWriter, actions.Cancel)
 			m.Post("/approve", reqRepoActionsWriter, actions.Approve)
 			m.Get("/artifacts/{artifact_name}", actions.ArtifactsDownloadView)
-			m.Delete("/artifacts/{artifact_name}", actions.ArtifactsDeleteView)
+			m.Delete("/artifacts/{artifact_name}", reqRepoActionsWriter, actions.ArtifactsDeleteView)
 			m.Post("/rerun", reqRepoActionsWriter, actions.Rerun)
 		})
 		m.Group("/workflows/{workflow_name}", func() {
